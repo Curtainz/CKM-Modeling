@@ -70,11 +70,11 @@ ckm_stage <- function(row) {
   gender <- as.numeric(substr(row["ID"], nchar(row["ID"]), nchar(row["ID"])))  # 通过 ID 最后一位判断性别
   
   # **Stage 0: 无 CKM 风险**
-  if (!is.na(bmi) & bmi < 23 &                                        # BMI小于23
-      !is.na(sbp) & sbp < 130 & !is.na(dbp) & dbp < 80 &              # 收缩压小于130，舒张压小于80
-      !is.na(fbg) & fbg < 100 &                                       # 空腹血糖小于100
-      !is.na(tg) & tg < 135 &                                         # 甘油三酯小于135
-      !is.na(mets) & mets == 2 &                                      # 无 MetS
+  if ((!is.na(bmi) & bmi < 23) &                                      # BMI小于23
+      (!is.na(sbp) & sbp < 130) & (!is.na(dbp) & dbp < 80) &          # 收缩压小于130，舒张压小于80
+      (!is.na(fbg) & fbg < 100) &                                     # 空腹血糖小于100
+      (!is.na(tg) & tg < 135) &                                       # 甘油三酯小于135
+      (!is.na(mets) & mets == 2) &                                    # 无 MetS
       kidney_disease == 2 & heart_disease == 2 & diabetes_hbs == 2) { # 无 糖尿病/高血糖、CKD、CVD
     return(0)
   }
@@ -83,7 +83,7 @@ ckm_stage <- function(row) {
   if (!is.na(bmi) & bmi >= 23 &                                 # BMI大于等于23
       (!is.na(sbp) & sbp < 130) & (!is.na(dbp) & dbp < 80) &    # 收缩压小于130，舒张压小于80
       !is.na(tg) & tg < 135 &                                   # 甘油三酯小于135
-      kidney_disease == 2 &                                     # 无 CKD
+      !is.na(kidney_disease) & kidney_disease == 2 &            # 无 CKD
       ((!is.na(waist) & waist >= ifelse(gender == 1, 90, 80)) | # 腰围男性大于等于90，女性大于等于80
        (!is.na(fbg) & fbg >= 112) |                             # 空腹血糖大于等于112
        (!is.na(hba1c) & hba1c >= 5.7 & hba1c <= 6.4))) {        # 糖化血红蛋白位于5.7-6.4之间
@@ -91,13 +91,13 @@ ckm_stage <- function(row) {
   }
   
   # **Stage 2: 代谢风险因素和CKD**
-  if ((!is.na(sbp) & sbp >= 130) | # 收缩压大于等于130
-      (!is.na(dbp) & dbp >= 80) |  # 舒张压大于等于80
-      (!is.na(fbg) & fbg >= 100) | # 空腹血糖大于等于100
-      (!is.na(tg) & tg >= 135) |   # 甘油三酯大于等于135
-      mets == 1 |                  # 有 MetS
-      diabetes_hbs == 1 |          # 有 糖尿病/高血糖
-      kidney_disease == 1) {       # 有 CKD
+  if ((!is.na(sbp) & sbp >= 130) |                      # 收缩压大于等于130
+      (!is.na(dbp) & dbp >= 80) |                       # 舒张压大于等于80
+      (!is.na(fbg) & fbg >= 100) |                      # 空腹血糖大于等于100
+      (!is.na(tg) & tg >= 135) |                        # 甘油三酯大于等于135
+      (!is.na(mets) & mets == 1) |                      # 有 MetS
+      (!is.na(diabetes_hbs) & diabetes_hbs == 1) |      # 有 糖尿病/高血糖
+      (!is.na(kidney_disease) & kidney_disease == 1)) { # 有 CKD
     return(2)
   }
   
@@ -107,16 +107,13 @@ ckm_stage <- function(row) {
 # 应用 CKM 分期
 data$CKM_stage <- apply(data, 1, ckm_stage)
 
-# 统计 CKM 分期分布
-table(data$CKM_stage)
-
 ################################################################################
 ################################################################################
 ################################################################################
 
 # **Stage 3: 亚临床/临床 CVD in CKM**
-if ((ckm_stage(row) == 1 | ckm_stage(row) == 2) & 
-    (heart_disease == 1 | stroke == 1)) {
-  return(3)
-}
+#if ((ckm_stage(row) == 1 | ckm_stage(row) == 2) & 
+#    (heart_disease == 1 | stroke == 1)) {
+#  return(3)
+#}
 
