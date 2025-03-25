@@ -185,3 +185,4 @@ data_female <- data[last_digit == 2, ]
 write_dta(data_male, "D:/GitHub/CKM-Modeling/ProcessedData/CHARLS-2011/2025.3.19/cleaned_data_male.dta")
 write_dta(data_female, "D:/GitHub/CKM-Modeling/ProcessedData/CHARLS-2011/2025.3.19/cleaned_data_female.dta")
 write_dta(data, "D:/GitHub/CKM-Modeling/ProcessedData/CHARLS-2011/2025.3.19/cleaned_data.dta")
+write.csv(data, "D:/GitHub/CKM-Modeling/ProcessedData/CHARLS-2011/2025.3.19/cleaned_data.csv")
