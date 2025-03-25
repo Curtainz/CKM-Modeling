@@ -91,15 +91,15 @@ ckm_stage <- function(row) {
   }
   
   # **Stage 2: 代谢风险因素和CKD**
-  if ((!is.na(sbp) & sbp >= 130) |                      # 收缩压大于等于130
-      (!is.na(dbp) & dbp >= 80) |                       # 舒张压大于等于80
-      (!is.na(fbg) & fbg >= 100) |                      # 空腹血糖大于等于100
-      (!is.na(tg) & tg >= 135) |                        # 甘油三酯大于等于135
-      (!is.na(mets) & mets == 1) |                      # 有 MetS
-      (!is.na(diabetes_hbs) & diabetes_hbs == 1) |      # 有 糖尿病/高血糖
-      (!is.na(kidney_disease) & kidney_disease == 1)) { # 有 CKD
-    return(2)
-  }
+#  if ((!is.na(sbp) & sbp >= 130) |                      # 收缩压大于等于130
+#      (!is.na(dbp) & dbp >= 80) |                       # 舒张压大于等于80
+#      (!is.na(fbg) & fbg >= 100) |                      # 空腹血糖大于等于100
+#      (!is.na(tg) & tg >= 135) |                        # 甘油三酯大于等于135
+#      (!is.na(mets) & mets == 1) |                      # 有 MetS
+#      (!is.na(diabetes_hbs) & diabetes_hbs == 1) |      # 有 糖尿病/高血糖
+#      (!is.na(kidney_disease) & kidney_disease == 1)) { # 有 CKD
+#    return(2)
+#  }
   
   return(NA)  # 未分类
 }
