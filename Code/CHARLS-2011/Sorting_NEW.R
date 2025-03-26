@@ -19,41 +19,80 @@ data <- data %>%
   select(ID, householdID, communityID, height, height_def, weight, weight_def, BMI, BMI_def, everything())
 
 # 定义MetS判断函数
-check_mets <- function(row) {
-  
-  # 变量提取，仅使用正常数据
-  waist <- ifelse(row["waist_def"] == "normal", row["waist"], NA) # 腰围
-  sbp <- ifelse(row["bp_def"] == "normal", row["systolic"], NA)   # 收缩压
-  dbp <- ifelse(row["bp_def"] == "normal", row["diastolic"], NA)  # 舒张压
-  med <- row["hyp_med"]                                           # 是否使用降压药（1=有，NA=无OR缺失）
-  fbg <- row["newglu"]                                            # 空腹血糖
-  hdl <- row["newhdl"]                                            # 高密度脂蛋白 
-  tg <- row["newtg"]                                              # 甘油三酯
-  gender <- as.numeric(substr(row["ID"], nchar(row["ID"]), nchar(row["ID"])))  # 通过 ID 最后一位判断性别
-  
-  # 计算异常指标数量
-  abnormal_count <- sum(
-    !is.na(waist) & ((gender == 1 & waist > 90) | (gender == 2 & waist > 80)),
-    !is.na(hdl) & ((gender == 1 & hdl < 40) | (gender == 2 & hdl < 50)),
-    !is.na(tg) & tg >= 150,
-    ((!is.na(sbp) & sbp >= 130) | (!is.na(dbp) & dbp >= 80) | !is.na(med)),
-    !is.na(fbg) & fbg >= 100
-  )
-  if (abnormal_count >= 3) {
-    return("1")
-  } else {
-    return("2")
-  }
-}
+data <- data %>%
+  rowwise() %>%
+  mutate(
+    gender = as.numeric(substr(ID, nchar(ID), nchar(ID))),
+    abnormal_count = sum(
+      !is.na(ifelse(waist_def == "normal", waist, NA)) & ((gender == 1 & waist > 90) | (gender == 2 & waist > 80)),
+      !is.na(ifelse(newhdl == "normal", newhdl, NA)) & ((gender == 1 & newhdl < 40) | (gender == 2 & newhdl < 50)),
+      !is.na(newtg) & newtg >= 150,
+      ((!is.na(ifelse(bp_def == "normal", systolic, NA)) & ifelse(bp_def == "normal", systolic, NA) >= 130) |
+         (!is.na(ifelse(bp_def == "normal", diastolic, NA)) & ifelse(bp_def == "normal", diastolic, NA) >= 80) |
+         !is.na(hyp_med)),
+      !is.na(newglu) & newglu >= 100
+    ),
+    MetS = ifelse(abnormal_count >= 3, "1", "2")
+  ) %>%
+  ungroup() %>%
+  select(-gender, -abnormal_count)
 
-# 应用函数到每一行并创建新的MetS列
-data$MetS <- apply(data, 1, check_mets)
+# 定义性别
+data <- data %>%
+  mutate(gender = as.numeric(substr(data$ID, nchar(data$ID), nchar(data$ID))))
 
-# 判断代谢风险
-metabolic_risk = ifelse(
-  ("" == 1) |
-    ( >= 135) |
-    (`糖尿病/高血糖情况` == 1) |
-    (空腹血糖 >= 100 & 空腹血糖 < 126),
-  TRUE, FALSE
-),
+# 给符合stage0的样本进行分类
+data <- data %>%
+  mutate(stage_0 = ifelse((!is.na(data$BMI) & data$BMI < 23) &
+                            (!is.na(data$MetS) & data$MetS == 2) &
+                            (!is.na(data$newtg) & data$newtg < 150) &
+                            (!is.na(data$hypert) & data$hypert == 2) &
+                            (!is.na(data$diabetes_hbs) & data$diabetes_hbs == 2) &
+                            (!is.na(data$heart_disease) & data$heart_disease == 2) &
+                            (!is.na(data$kidney_disease) & data$kidney_disease == 2),
+                          0, NA))
+
+# 给符合stage1的样本进行分类
+data <- data %>%
+  mutate(stage_1 = ifelse((!is.na(data$BMI) & data$BMI >= 23) &
+                            (((!is.na(waist) & 
+                                  ((gender == 1 & waist >= 90) | (gender == 2 & waist >= 80)))) |
+                            ((!is.na(data$newglu) & data$newglu >= 100)) |
+                            ((!is.na(data$newhba1c) & (data$newhba1c <= 6.4) & (data$newhba1c >= 5.7)))) &
+                            (!is.na(data$kidney_disease) & data$kidney_disease != 1),
+                          1, NA))
+
+table(data$stage_1)
+
+# 给符合stage2的样本进行分类
+data <- data %>%
+  mutate(stage_2 = ifelse((!is.na(data$newtg) & data$newtg >= 135) |
+                            (!is.na(data$hypert) & data$hypert == 1) |
+                            (!is.na(data$MetS) & data$MetS == 1) |
+                            (!is.na(data$diabetes_hbs) & data$diabetes_hbs == 1) |
+                            (!is.na(data$kidney_disease) & data$kidney_disease == 1),
+                          2, NA))
+table(data$stage_2)
+
+# 给符合stage3的样本进行分类
+data <- data %>%
+  mutate(stage_3 = ifelse(((!is.na(data$stage_1) & data$stage_1 == 1) |
+                            (!is.na(data$stage_2) & data$stage_2 == 2)) &
+                            ((!is.na(data$stroke) & data$stroke == 1) |
+                            (!is.na(data$heart_disease) & data$heart_disease == 1) |
+                            (!is.na(data$kidney_disease) & data$kidney_disease == 1)),
+                          3, NA))
+table(data$stage_3)
+
+# stage套
+data <- data %>%
+  mutate(stage = pmax(stage_0, stage_1, stage_2, stage_3, na.rm = TRUE))
+table(data$stage)
+table(data$MetS)
+table(data$hypert)
+table(data$diabetes_hbs)
+table(data$heart_disease)
+table(data$stroke)
+table(data$kidney_disease)
+
+write_dta(data, "D:/GitHub/CKM-Modeling/ProcessedData/CHARLS-2011/2025.3.26/data.csv")

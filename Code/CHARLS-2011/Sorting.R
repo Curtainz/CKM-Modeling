@@ -114,11 +114,11 @@ ckm_stage <- function(row) {
   }
   
   # **Stage 2: 代谢风险因素和CKD**
-  if ((!is.na(hypt) & hypt != 2) |                      # 有高血压
-      (!is.na(tg) & tg >= 135) |                        # 甘油三酯大于等于135
-      (!is.na(mets) & mets != 2) |                      # 有 MetS
-      (!is.na(dhbs) & dhbs != 2) |                      # 有 糖尿病/高血糖
-      (!is.na(ckd) & ckd != 2)                          # 有 CKD
+  if ((!is.na(hypt) & hypt == 1) #|                      # 有高血压
+      #(!is.na(tg) & tg >= 135) |                        # 甘油三酯大于等于135
+      #(!is.na(mets) & mets != 2) |                      # 有 MetS
+      #(!is.na(dhbs) & dhbs != 2) |                      # 有 糖尿病/高血糖
+      #(!is.na(ckd) & ckd != 2)                          # 有 CKD
     ){ 
     return(2)
   }
@@ -130,10 +130,10 @@ ckm_stage <- function(row) {
 data$CKM_stage <- apply(data, 1, ckm_stage)
 
 # **Stage 3: 亚临床/临床 CVD in CKM**
-data <- data %>%
-  mutate(
-    CKM_stage = ifelse(CKM_stage %in% c(1, 2) & (new_heart_disease == 1 | new_stroke == 1), 3, CKM_stage)
-  ) # 满足1/2阶，并患有 CVD / 中风 则为三阶
+#data <- data %>%
+#  mutate(
+#    CKM_stage = ifelse(CKM_stage %in% c(1, 2) & (new_heart_disease == 1 | new_stroke == 1), 3, CKM_stage)
+#  ) # 满足1/2阶，并患有 CVD / 中风 则为三阶
 
 table(data$CKM_stage)
 table(data$MetS)
