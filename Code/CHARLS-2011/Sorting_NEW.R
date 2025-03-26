@@ -54,11 +54,11 @@ data <- data %>%
 
 # 给符合stage1的样本进行分类
 data <- data %>%
-  mutate(stage_1 = ifelse((!is.na(data$BMI) & data$BMI >= 23) &
+  mutate(stage_1 = ifelse(((!is.na(data$BMI) & data$BMI >= 23) |
                             (((!is.na(waist) & 
                                   ((gender == 1 & waist >= 90) | (gender == 2 & waist >= 80)))) |
                             ((!is.na(data$newglu) & data$newglu >= 100)) |
-                            ((!is.na(data$newhba1c) & (data$newhba1c <= 6.4) & (data$newhba1c >= 5.7)))) &
+                            ((!is.na(data$newhba1c) & (data$newhba1c <= 6.4) & (data$newhba1c >= 5.7))))) &
                             (!is.na(data$kidney_disease) & data$kidney_disease != 1),
                           1, NA))
 
@@ -95,4 +95,5 @@ table(data$heart_disease)
 table(data$stroke)
 table(data$kidney_disease)
 
-write_dta(data, "D:/GitHub/CKM-Modeling/ProcessedData/CHARLS-2011/2025.3.26/data.csv")
+library(writexl)
+write_xlsx(data, "D:/GitHub/CKM-Modeling/ProcessedData/CHARLS-2011/2025.3.26/data.xlsx")
