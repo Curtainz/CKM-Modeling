@@ -75,11 +75,8 @@ ckm_stage <- function(row) {
   fbg <- ifelse(!is.na(row["newglu"]), row["newglu"], NA)                      # 空腹血糖
   hdl <- ifelse(!is.na(row["newhdl"]), row["newhdl"], NA)                      # 高密度脂蛋白 
   tg <- ifelse(!is.na(row["newtg"]), row["newtg"], NA)                         # 甘油三酯
-  dhbs <- ifelse(!is.na(row["new_diabetes_hbs"]), row["new_diabetes_hbs"], NA)         # 是否有糖尿病/高血糖（1=有，2=无）
-  kd <- ifelse(!is.na(row["new_kidney_disease"]), row["new_kidney_disease"], NA)       # 是否有 CKD（1=有，2=无）
-  hd <- ifelse(!is.na(row["new_heart_disease"]), row["new_heart_disease"], NA)         # 是否有 CVD（1=有，2=无）
-  stk <- ifelse(!is.na(row["new_stroke"]), row["new_stroke"], NA)                      # 是否有卒中（1=有，2=无）
   mets <- ifelse(!is.na(row["MetS"]), row["MetS"], NA)                         # MetS状态（1=有，2=无）
+  ckd <- row["new_kidney_disease"]                                             # CKD状态（1=有，2=无）
   gender <- as.numeric(substr(row["ID"], nchar(row["ID"]), nchar(row["ID"])))  # 通过 ID 最后一位判断性别
   
   # **Stage 0: 无 CKM 风险**
@@ -87,8 +84,8 @@ ckm_stage <- function(row) {
       (!is.na(sbp) & sbp < 130) & (!is.na(dbp) & dbp < 80) &   # 收缩压小于130，舒张压小于80
       (!is.na(fbg) & fbg < 100) &                              # 空腹血糖小于100
       (!is.na(tg) & tg < 135) &                                # 甘油三酯小于135
-      (!is.na(mets) & mets == 2) #&                             # 无 MetS
-#      (!is.na(kd) & kd == 2) &                                 # 无 CKD
+      (!is.na(mets) & mets == 2) &                             # 无 MetS
+      (!is.na(ckd) & ckd > 1) #&                                 # 无 CKD
 #      (!is.na(hd) & hd == 2) &                                 # 无 CVD
 #      (!is.na(stk) & stk == 2) &                               # 无卒中
 #      (!is.na(dhbs) & dhbs == 2)                               # 无 糖尿病/高血糖
