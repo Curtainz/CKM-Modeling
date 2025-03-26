@@ -18,6 +18,19 @@ data <- data %>%
 data <- data %>%
   select(ID, householdID, communityID, height, height_def, weight, weight_def, BMI, BMI_def, everything())
 
+# 转换数据类型
+data <- data %>%
+  mutate(across(c(diabetes_hbs, kidney_disease, heart_disease, stroke), as.numeric))
+
+# 新建慢性病判断列以替代原有列
+data <- data %>%
+  mutate(
+    new_diabetes_hbs = ifelse(diabetes_hbs == 1, 1, ifelse(diabetes_hbs == 2, 2, NA)),
+    new_kidney_disease = ifelse(kidney_disease == 1, 1, ifelse(kidney_disease == 2, 2, NA)),
+    new_heart_disease = ifelse(heart_disease == 1, 1, ifelse(heart_disease == 2, 2, NA)),
+    new_stroke = ifelse(stroke == 1, 1, ifelse(stroke == 2, 2, NA))
+  )
+
 # 定义MetS判断函数
 check_mets <- function(row) {
   
@@ -48,56 +61,62 @@ check_mets <- function(row) {
 
   # 应用函数到每一行并创建新的MetS列
   data$MetS <- apply(data, 1, check_mets)
-
+  
 # 定义CKM分期函数
 ckm_stage <- function(row) {
   
   # 变量提取，仅使用正常数据
-  bmi <- ifelse(row["BMI_def"] == "normal", row["BMI"], NA)       # BMI
-  waist <- ifelse(row["waist_def"] == "normal", row["waist"], NA) # 腰围
-  sbp <- ifelse(row["bp_def"] == "normal", row["systolic"], NA)   # 收缩压
-  dbp <- ifelse(row["bp_def"] == "normal", row["diastolic"], NA)  # 舒张压
-  med <- row["hyp_med"]                                           # 是否使用降压药（1=有，NA=无OR缺失）
-  hba1c <- row["newhba1c"]                                        # 糖化血红蛋白
-  fbg <- row["newglu"]                                            # 空腹血糖
-  hdl <- row["newhdl"]                                            # 高密度脂蛋白 
-  tg <- row["newtg"]                                              # 甘油三酯
-  diabetes_hbs <- row["diabetes_hbs"]                             # 是否有糖尿病/高血糖（1=有，2=无）
-  kidney_disease <- row["kidney_disease"]                         # 是否有 CKD（1=有，2=无）
-  heart_disease <- row["heart_disease"]                           # 是否有 CVD（1=有，2=无）
-  stroke <- row["stroke"]                                         # 是否有卒中（1=有，2=无）
-  mets <- row["MetS"]                                             # MetS状态（1=有，2=无）
+  bmi <- ifelse(row["BMI_def"] == "normal", row["BMI"], NA)                    # BMI
+  waist <- ifelse(row["waist_def"] == "normal", row["waist"], NA)              # 腰围
+  sbp <- ifelse(row["bp_def"] == "normal", row["systolic"], NA)                # 收缩压
+  dbp <- ifelse(row["bp_def"] == "normal", row["diastolic"], NA)               # 舒张压
+  med <- ifelse(!is.na(row["hyp_med"]), row["hyp_med"], NA)                    # 是否使用降压药（1=有，NA=无OR缺失）
+  hba1c <- ifelse(!is.na(row["newhba1c"]), row["newhba1c"], NA)                # 糖化血红蛋白
+  fbg <- ifelse(!is.na(row["newglu"]), row["newglu"], NA)                      # 空腹血糖
+  hdl <- ifelse(!is.na(row["newhdl"]), row["newhdl"], NA)                      # 高密度脂蛋白 
+  tg <- ifelse(!is.na(row["newtg"]), row["newtg"], NA)                         # 甘油三酯
+  dhbs <- ifelse(!is.na(row["new_diabetes_hbs"]), row["new_diabetes_hbs"], NA)         # 是否有糖尿病/高血糖（1=有，2=无）
+  kd <- ifelse(!is.na(row["new_kidney_disease"]), row["new_kidney_disease"], NA)       # 是否有 CKD（1=有，2=无）
+  hd <- ifelse(!is.na(row["new_heart_disease"]), row["new_heart_disease"], NA)         # 是否有 CVD（1=有，2=无）
+  stk <- ifelse(!is.na(row["new_stroke"]), row["new_stroke"], NA)                      # 是否有卒中（1=有，2=无）
+  mets <- ifelse(!is.na(row["MetS"]), row["MetS"], NA)                         # MetS状态（1=有，2=无）
   gender <- as.numeric(substr(row["ID"], nchar(row["ID"]), nchar(row["ID"])))  # 通过 ID 最后一位判断性别
   
   # **Stage 0: 无 CKM 风险**
-  if ((!is.na(bmi) & bmi < 23) &                                      # BMI小于23
-      (!is.na(sbp) & sbp < 130) & (!is.na(dbp) & dbp < 80) &          # 收缩压小于130，舒张压小于80
-      (!is.na(fbg) & fbg < 100) &                                     # 空腹血糖小于100
-      (!is.na(tg) & tg < 135) &                                       # 甘油三酯小于135
-      (!is.na(mets) & mets == 2) &                                    # 无 MetS
-      kidney_disease == 2 & heart_disease == 2 & diabetes_hbs == 2) { # 无 糖尿病/高血糖、CKD、CVD
+  if ((!is.na(bmi) & bmi < 23) &                               # BMI小于23
+      (!is.na(sbp) & sbp < 130) & (!is.na(dbp) & dbp < 80) &   # 收缩压小于130，舒张压小于80
+      (!is.na(fbg) & fbg < 100) &                              # 空腹血糖小于100
+      (!is.na(tg) & tg < 135) &                                # 甘油三酯小于135
+      (!is.na(mets) & mets == 2) #&                             # 无 MetS
+#      (!is.na(kd) & kd == 2) &                                 # 无 CKD
+#      (!is.na(hd) & hd == 2) &                                 # 无 CVD
+#      (!is.na(stk) & stk == 2) &                               # 无卒中
+#      (!is.na(dhbs) & dhbs == 2)                               # 无 糖尿病/高血糖
+    ){
     return(0)
   }
   
   # **Stage 1: 过度或失调性肥胖**
-  if (!is.na(bmi) & bmi >= 23 &                                 # BMI大于等于23
-      (!is.na(sbp) & sbp < 130) & (!is.na(dbp) & dbp < 80) &    # 收缩压小于130，舒张压小于80
-      !is.na(tg) & tg < 135 &                                   # 甘油三酯小于135
-      !is.na(kidney_disease) & kidney_disease == 2 &            # 无 CKD
-      ((!is.na(waist) & waist >= ifelse(gender == 1, 90, 80)) | # 腰围男性大于等于90，女性大于等于80
-       (!is.na(fbg) & fbg >= 112) |                             # 空腹血糖大于等于112
-       (!is.na(hba1c) & hba1c >= 5.7 & hba1c <= 6.4))) {        # 糖化血红蛋白位于5.7-6.4之间
-    return(1)
-  }
+#  if (!is.na(bmi) & bmi >= 23 &                                 # BMI大于等于23
+#      (!is.na(sbp) & sbp < 130) & (!is.na(dbp) & dbp < 80) &    # 收缩压小于130，舒张压小于80
+#      !is.na(tg) & tg < 135 &                                   # 甘油三酯小于135
+#      !is.na(kidney_disease) & kidney_disease == 2 &            # 无 CKD
+#      ((!is.na(waist) & waist >= ifelse(gender == 1, 90, 80)) | # 腰围男性大于等于90，女性大于等于80
+#       (!is.na(fbg) & fbg >= 112) |                             # 空腹血糖大于等于112
+#       (!is.na(hba1c) & hba1c >= 5.7 & hba1c <= 6.4))           # 糖化血红蛋白位于5.7-6.4之间
+#    ){        
+#    return(1)
+#  }
   
   # **Stage 2: 代谢风险因素和CKD**
 #  if ((!is.na(sbp) & sbp >= 130) |                      # 收缩压大于等于130
 #      (!is.na(dbp) & dbp >= 80) |                       # 舒张压大于等于80
 #      (!is.na(fbg) & fbg >= 100) |                      # 空腹血糖大于等于100
 #      (!is.na(tg) & tg >= 135) |                        # 甘油三酯大于等于135
-#      (!is.na(mets) & mets == 1) |                      # 有 MetS
+#      (!is.na(mets) & mets == 1) #|                      # 有 MetS
 #      (!is.na(diabetes_hbs) & diabetes_hbs == 1) |      # 有 糖尿病/高血糖
-#      (!is.na(kidney_disease) & kidney_disease == 1)) { # 有 CKD
+#      (!is.na(kidney_disease) & kidney_disease == 1)    # 有 CKD
+#    ){ 
 #    return(2)
 #  }
   
