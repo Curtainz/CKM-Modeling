@@ -78,16 +78,32 @@ data <- read_dta("D:/GitHub/CKM-Modeling/Datasets/CHARLS-2011/RawData/household_
 # fn001是否在领取养老金
 work_retirement_and_pension <- data %>% select(ID, householdID, communityID, fn001)
 
+##### 血检数据 #####
+
+# 读取数据
+data <- read_dta("D:/GitHub/CKM-Modeling/Datasets/CHARLS-2011/RawData/Active/Blood_20140429.dta")
+
+# 从数据中提取如下变量
+# 个人ID
+# qc1_vb009血小板，newbun尿素氮，newglu血糖，qc1_vb002白细胞，newcho总胆固醇，newtg甘油三酯，newhdl高密度脂蛋白，newldl低密度脂蛋白，newcrpC反应蛋白，newhba1c糖化血红蛋白，newua尿酸
+blood <- data %>% select(ID, qc1_vb009, newbun, newglu, qc1_vb002, newcho, newtg, newhdl, newldl, newcrp, newhba1c, newua)
+
 ##### 数据整合 #####
 
 # 选择合并列
 merge_cols <- c("ID", "householdID", "communityID")
 
-# 合并体检数据和健康数据
-merged_data <- full_join(household_roster, demographic_background, by = merge_cols) %>%
+# 合并数据
+merged_data_ <- full_join(household_roster, demographic_background, by = merge_cols) %>%
   full_join(health_status_and_functioning, by = merge_cols) %>%
   full_join(health_care_and_insurance, by = merge_cols) %>%
   full_join(work_retirement_and_pension, by = merge_cols)
 
+# 选择合并列
+merge_cols <- "ID"
+
+# 合并数据
+merged_data <- full_join(merged_data_, blood, by = merge_cols)
+
 # 导出数据
-write_dta(merged_data, "D:/GitHub/CKM-Modeling/ProcessedData/CHARLS-2011/2025.3.30/combined_variable_data.dta")
+write_dta(merged_data, "D:/GitHub/CKM-Modeling/ProcessedData/CHARLS-2011/Completed/4-combined_variable_data.dta")
