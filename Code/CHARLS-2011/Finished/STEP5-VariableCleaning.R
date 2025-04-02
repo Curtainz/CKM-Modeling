@@ -5,6 +5,10 @@ library(dplyr)
 # 读取数据
 data <- read_dta("D:/GitHub/CKM-Modeling/ProcessedData/CHARLS-2011/Completed/4-combined_variable_data.dta")
 
+##### 整理地区列 #####
+data <- data %>% # 把a001的所有值-1，不包括空值
+  mutate(a001 = ifelse(is.na(a001), a001, a001 - 1))
+
 ##### 整理自我健康评估列 #####
 data <- data %>% mutate(da002 = ifelse(is.na(da002), da002, da002 + 1)) # 把da002的所有值+1，不包括空值
 data <- data %>% mutate(da001 = ifelse(is.na(da001), da002, da001))     # 把da001的空值替换为da002的值
@@ -16,6 +20,8 @@ data <- data %>%
   mutate(da007_5_ = ifelse(is.na(da008_5_), da007_5_, da008_5_)) %>% # 用自报数据代替肺部慢性病
   mutate(da007_11_ = ifelse(is.na(da008_11_), da007_11_, da008_11_)) # 用自报数据代替情感或精神问题
 data <- data %>% select(-da008_11_, -da008_5_, -da008_1_)            # 删除da008_11_ da008_5_ da008_1_
+data <- data %>% # 计算da007_1_至da007_14_中1的个数并赋值给新变量，不包括空值
+  mutate(chronic_disease_count = rowSums(select(., da007_1_:da007_14_) == 1, na.rm = TRUE))
 
 ##### 社交活动分数计算 #####
 # 社交活动参与情况
@@ -140,29 +146,42 @@ data <- data %>% # 若该样本在da001-da009的空值不大于9个，则把da00
   mutate(db009 = ifelse(is.na(db009), 0, db009))
 data <- data %>% 
   mutate(adl_score = db001 + db002 + db003 + db004 + db005 + db006 + db007 + db008 + db009) # 计算ADL分数
-data <- data %>% # 判断ADL状态，0-3分为良好，4-6分为中等，7分以上为差
-  mutate(adl_status = case_when(
-    adl_score <= 3 ~ "good",
-    adl_score <= 6 ~ "mild",
-    TRUE ~ "severe"
-  ))
+#data <- data %>% # 判断ADL状态，0-3分为良好，4-6分为中等，7分以上为差
+#  mutate(adl_status = case_when(
+#    adl_score <= 3 ~ "good",
+#    adl_score <= 6 ~ "mild",
+#    TRUE ~ "severe"
+#  ))
 
 ##### BADL分数计算 #####
+data <- data %>% # db010至db015的所有值-1，不包括空值
+  mutate(db010 = ifelse(is.na(db010), db010, db010 - 1)) %>% 
+  mutate(db011 = ifelse(is.na(db011), db011, db011 - 1)) %>% 
+  mutate(db012 = ifelse(is.na(db012), db012, db012 - 1)) %>% 
+  mutate(db013 = ifelse(is.na(db013), db013, db013 - 1)) %>% 
+  mutate(db014 = ifelse(is.na(db014), db014, db014 - 1)) %>%
+  mutate(db015 = ifelse(is.na(db015), db015, db015 - 1))
 data <- data %>% # 创建BADL分数列，为db010-db015的和
   mutate(badl_score = db010 + db011 + db012 + db013 + db014 + db015)
 data <- data %>% # 判断BADL状态，小于等于12分为独立，大于12分为依赖
   mutate(badl_status = case_when(
-    badl_score <= 12 ~ "indep",
-    TRUE ~ "dep"
+    badl_score <= 10 ~ "0",
+    TRUE ~ "1"
   ))
 
 ##### IADL分数计算 #####
+data <- data %>% # db016至db020的所有值-1，不包括空值
+  mutate(db016 = ifelse(is.na(db016), db016, db016 - 1)) %>% 
+  mutate(db017 = ifelse(is.na(db017), db017, db017 - 1)) %>% 
+  mutate(db018 = ifelse(is.na(db018), db018, db018 - 1)) %>% 
+  mutate(db019 = ifelse(is.na(db019), db019, db019 - 1)) %>% 
+  mutate(db020 = ifelse(is.na(db020), db020, db020 - 1))
 data <- data %>% # 创建IADL分数列，为db016-db020的和
   mutate(iadl_score = db016 + db017 + db018 + db019 + db020)
 data <- data %>% # 判断IADL状态，小于等于10分为独立，大于10分为依赖
   mutate(iadl_status = case_when(
-    iadl_score <= 10 ~ "indep",
-    TRUE ~ "dep"
+    iadl_score <= 10 ~ "0",
+    TRUE ~ "1"
   ))
 
 ##### 认知数据整理计算 #####
@@ -206,10 +225,10 @@ data <- data %>% # bd001空值赋值0
 data <- data %>% # 判断认知状态：若bd001=1，大于等于10分为正常；bd001=2~4，大于等于12分为正常；bd001>4，大于等于15分为正常
   mutate(cognitive_status = case_when(
     bd001 == 0 ~ NA,
-    bd001 == 1 & cognitive_score >= 10 ~ "normal",
-    bd001 %in% 2:4 & cognitive_score >= 12 ~ "normal",
-    bd001 > 4 & cognitive_score >= 15 ~ "normal",
-    TRUE ~ "abnormal"
+    bd001 == 1 & cognitive_score >= 10 ~ "0",
+    bd001 %in% 2:4 & cognitive_score >= 12 ~ "0",
+    bd001 > 4 & cognitive_score >= 15 ~ "0",
+    TRUE ~ "1"
   ))
 
 ##### 计算抑郁症状 #####
@@ -233,14 +252,22 @@ data <- data %>% # 计算抑郁症状得分
 data <- data %>% # 判断抑郁症状状态，大于10分代表存在抑郁问题
   mutate(depression_status = case_when(
     is.na(depression_score) ~ NA,
-    depression_score > 10 ~ "yes",
-    TRUE ~ "no"
+    depression_score > 10 ~ "1",
+    TRUE ~ "0"
   ))
 
 ##### 查询并导出数据 #####
+table(data$social_attend_score)
+table(data$social_freq_score)
+table(data$adl_score)
+table(data$badl_score)
+table(data$iadl_score)
+table(data$cognitive_score)
+table(data$depression_score)
 table(data$adl_status)
 table(data$badl_status)
 table(data$iadl_status)
 table(data$cognitive_status)
 table(data$depression_status)
 write_dta(data, "D:/GitHub/CKM-Modeling/ProcessedData/CHARLS-2011/Completed/5-cleaned_variable_data.dta")
+
