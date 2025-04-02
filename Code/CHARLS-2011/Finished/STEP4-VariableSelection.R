@@ -26,7 +26,7 @@ demographic_background <- data %>% select(ID, householdID, communityID, ba004, b
 ##### D 健康状况和功能 #####
 
 # 读取数据
-data <- read_dta("D:/GitHub/CKM-Modeling/Datasets/CHARLS-2011/RawData/household_and_community_questionnaire_data/health_status_and_functioning.dta")
+data <- read_dta("D:/GitHub/CKM-Modeling/Datasets/CHARLS-2011/RawData/Active/health_status_and_functioning.dta")
 
 # 从数据中提取如下变量
 # 个人ID，家庭ID，社区ID
@@ -37,9 +37,10 @@ data <- read_dta("D:/GitHub/CKM-Modeling/Datasets/CHARLS-2011/RawData/household_
 # da048受访者15岁前的身体状况如何
 # da049晚上真正睡着的时间有几小时
 # da056s1-12是否进行这些社交活动（12为无）
+# da057_1_-_12_社交活动频率
 # da059是否吸过烟
 # da067过去一年中是否喝酒，频率如何
-# db010-db020行为困难
+# db001-db020行为困难
 # dc001-dc003日期、星期、季节认知
 # dc004自我记忆力评估
 # dc006s1-11词语回忆测试
@@ -51,8 +52,10 @@ data <- read_dta("D:/GitHub/CKM-Modeling/Datasets/CHARLS-2011/RawData/household_
 health_status_and_functioning <- data %>% 
   select(ID, householdID, communityID, da001, da002, da005_1_, da005_2_, da005_3_, da005_4_, da005_5_, 
          da007_1_, da008_1_, da007_2_, da007_3_, da007_4_, da007_5_, da008_5_, da007_6_, da007_7_, da007_8_, da007_9_, da007_10_, da007_11_, da008_11_, da007_12_, da007_13_, da007_14_,
-         da048, da049, da056s1, da056s2, da056s3, da056s4, da056s5, da056s6, da056s7, da056s8, da056s9, da056s10, da056s11, da056s12, da059, da067,
-         db010, db011, db012, db013, db014, db015, db016, db017, db018, db019, db020, dc001s1, dc001s2, dc001s3, dc002, dc003, dc004,
+         da048, da049, 
+         da056s1, da057_1_, da056s2, da057_2_, da056s3, da057_3_, da056s4, da057_4_, da056s5, da057_5_, da056s6, da057_6_, da056s7, da057_7_, da056s8, da057_8_, da056s9, da057_9_, da056s10, da057_10_, da056s11, da057_11_, da056s12,
+         da059, da067,
+         db001, db002, db003, db004, db005, db006, db007, db008, db009, db010, db011, db012, db013, db014, db015, db016, db017, db018, db019, db020, dc001s1, dc001s2, dc001s3, dc002, dc003, dc004,
          dc006s1, dc006s2, dc006s3, dc006s4, dc006s5, dc006s6, dc006s7, dc006s8, dc006s9, dc006s10, dc006s11, 
          dc027s1, dc027s2, dc027s3, dc027s4, dc027s5, dc027s6, dc027s7, dc027s8, dc027s9, dc027s10, dc027s11,
          dc009, dc010, dc011, dc012, dc013, dc014, dc015, dc016, dc017, dc018, dc019, dc020, dc021, dc022, dc023, dc024, dc025,
@@ -107,3 +110,4 @@ merged_data <- full_join(merged_data_, blood, by = merge_cols)
 
 # 导出数据
 write_dta(merged_data, "D:/GitHub/CKM-Modeling/ProcessedData/CHARLS-2011/Completed/4-combined_variable_data.dta")
+
