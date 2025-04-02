@@ -236,3 +236,11 @@ data <- data %>% # 判断抑郁症状状态，大于10分代表存在抑郁问�
     depression_score > 10 ~ "yes",
     TRUE ~ "no"
   ))
+
+##### 查询并导出数据 #####
+table(data$adl_status)
+table(data$badl_status)
+table(data$iadl_status)
+table(data$cognitive_status)
+table(data$depression_status)
+write_dta(data, "D:/GitHub/CKM-Modeling/ProcessedData/CHARLS-2011/Completed/5-cleaned_variable_data.dta")
