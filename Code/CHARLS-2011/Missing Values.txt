@@ -1,0 +1,175 @@
+                              X.1                                 X                                ID                       householdID 
+                                0                                 0                                 0                                 0 
+
+
+                      communityID                            gender                            height                            weight 
+                                0                                 0                                 0                                 0 
+
+
+                            waist                          systolic                         diastolic                             stage 
+                                0                                 0                                 0                                 0 
+
+
+                           region                               age                         education                           marital 
+                             3609                              9229                                 0                                 0 
+
+
+                  selfratedhealth                physicalDisability                  mentalDisability                     visionProblem 
+                                5                                 6                                15                                 8 
+
+
+                   hearingProblem                  speechImpediment                      hypertension                      dyslipidemia 
+                               11                                16                                37                               166 
+
+
+         diabetesOrHighBloodSugar            cancerOrMalignantTumor                chronicLungDisease                      liverDisease 
+                               74                                40                                36                                61 
+
+
+                     heartProblem                            stroke                     kidneyDisease   stomachOrOtherDisgestiveDisease 
+                               42                                28                                41                                26 
+
+
+    emotionalOrPsychiatricDisease              memoryRelatedDisease             arthritisOrRheumatism                            asthma 
+                               39                                30                                24                                36 
+
+
+                  childhoodHealth                      avgSleepTime                           drawing                    bodyAcheOrPain 
+                               65                               147                                 0                              7172 
+
+
+                  sleepingProblem                    walkingProblem concentrationOrRememberingProblem                   breathShortness 
+                             7176                              7172                              7181                              7172 
+
+
+                       depression                   urbanEmployeeMI                   urbanResidentMI                  newCooperativeMI 
+                             7180                              8538                              8890                              1896 
+
+
+          urbanAndRuralResidentMI                      governmentMI                        medicalAid                  privateMIbyUnion 
+                             9127                              9101                              9230                              9180
+
+
+            privateMIbyIndividual                           otherMI                              noMI             chronic_disease_count 
+                             9075                              9176                              8712                                 0 
+
+
+                social_freq_score                     physDis_score                        badl_score                       badl_status 
+                                0                                 0                              2969                                 0
+
+
+                       iadl_score                       iadl_status                   cognitive_score                  cognitive_status 
+                               55                                 0                               977                                 3 
+
+
+                 depression_score                 depression_status 
+                              533                               533 
+
+#######################################################################################################################################
+
+                                X                                ID                       householdID                       communityID 
+                                0                                 0                                 0                                 0 
+
+                           gender                            height                        height_def                            weight 
+                             8102                              8102                              8102                              8102 
+
+                       weight_def                             waist                         waist_def                          systolic 
+                             8102                              8102                              8102                              8102 
+
+                        diastolic                            bp_def                             stage                            region 
+                             8102                              8102                              8284                              7487 
+
+                              age                         education                           marital                   selfratedhealth 
+                               63                                 0                                39                               137 
+
+               physicalDisability                  mentalDisability                     visionProblem                    hearingProblem 
+                              138                               149                               136                               142 
+
+                 speechImpediment                      hypertension                      dyslipidemia          diabetesOrHighBloodSugar 
+                              155                               243                               501                               306 
+
+           cancerOrMalignantTumor                chronicLungDisease                      liverDisease                      heartProblem 
+                              228                               216                               276                               247 
+
+                           stroke                     kidneyDisease   stomachOrOtherDisgestiveDisease     emotionalOrPsychiatricDisease 
+                              188                               262                               197                               224 
+
+             memoryRelatedDisease             arthritisOrRheumatism                            asthma                   childhoodHealth 
+                              207                               190                               217                               456 
+
+                     avgSleepTime                           drawing                    bodyAcheOrPain                   sleepingProblem 
+                             1623                                 0                             13985                             13988 
+
+                   walkingProblem concentrationOrRememberingProblem                   breathShortness                        depression 
+                            13980                             13997                             13981                             13991 
+
+                  urbanEmployeeMI                   urbanResidentMI                  newCooperativeMI           urbanAndRuralResidentMI 
+                            15802                             16921                              4812                             17490 
+
+                     governmentMI                        medicalAid                  privateMIbyUnion             privateMIbyIndividual 
+                            17345                             17700                             17595                             17393 
+
+                          otherMI                              noMI             chronic_disease_count                 social_freq_score 
+                            17584                             16534                                 0                                 0 
+
+                    physDis_score                        badl_score                       badl_status                        iadl_score 
+                                0                              6263                                 0                               264 
+
+                      iadl_status                   cognitive_score                  cognitive_status                  depression_score 
+                                0                              3511                                61                              2441 
+
+                depression_status 
+                             2441 
+
+########################################################################################################################################
+
+                                X                                ID                       householdID                       communityID 
+                                0                                 0                                 0                                 0 
+
+                           gender                            height                            weight                             waist 
+                                0                                 0                                 0                                 0 
+
+                         systolic                         diastolic                             stage                            region 
+                                0                                 0                                 0                                 0 
+
+                              age                         education                           marital                   selfratedhealth 
+                                0                                 0                                 0                                 5 
+
+               physicalDisability                  mentalDisability                     visionProblem                    hearingProblem 
+                                6                                15                                 8                                11 
+
+                 speechImpediment                      hypertension                      dyslipidemia          diabetesOrHighBloodSugar 
+                               16                                37                               166                                74 
+
+           cancerOrMalignantTumor                chronicLungDisease                      liverDisease                      heartProblem 
+                               40                                36                                61                                42 
+
+                           stroke                     kidneyDisease   stomachOrOtherDisgestiveDisease     emotionalOrPsychiatricDisease 
+                               28                                41                                26                                39 
+
+             memoryRelatedDisease             arthritisOrRheumatism                            asthma                   childhoodHealth 
+                               30                                24                                36                                65 
+
+                     avgSleepTime                           drawing                    bodyAcheOrPain                   sleepingProblem 
+                              147                                 0                              7172                              7176 
+
+                   walkingProblem concentrationOrRememberingProblem                   breathShortness                        depression 
+                             7172                              7181                              7172                              7180 
+
+                  urbanEmployeeMI                   urbanResidentMI                  newCooperativeMI           urbanAndRuralResidentMI 
+                             8538                              8890                              1896                              9127 
+
+                     governmentMI                        medicalAid                  privateMIbyUnion             privateMIbyIndividual 
+                             9101                              9230                              9180                              9075 
+
+                          otherMI                              noMI             chronic_disease_count                 social_freq_score 
+                             9176                              8712                                 0                                 0 
+
+                    physDis_score                        badl_score                       badl_status                        iadl_score 
+                                0                              2969                                 0                                55 
+
+                      iadl_status                   cognitive_score                  cognitive_status                  depression_score 
+                                0                               977                                 3                               533 
+                                
+                depression_status 
+                              533

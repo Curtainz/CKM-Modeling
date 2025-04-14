@@ -2,7 +2,7 @@ library(haven)
 library(dplyr)
 
 # 读取数据
-data <- read_dta("D:/GitHub/CKM-Modeling/ProcessedData/CHARLS-2011/2025.3.19/cleaned_data.dta")
+data <- read_dta("D:/GitHub/CKM-Modeling/ProcessedData/CHARLS-2011/Completed/2-cleaned_data.dta")
 
 # 定义并排序BMI异常值
 data <- data %>%
@@ -102,5 +102,5 @@ data <- data %>%
   mutate(stage = pmax(stage_0, stage_1, stage_2, stage_3, na.rm = TRUE))
 table(data$stage)
 
-write_dta(data, "D:/GitHub/CKM-Modeling/ProcessedData/CHARLS-2011/2025.3.26/stage_data.dta")
+write_dta(data, "D:/GitHub/CKM-Modeling/ProcessedData/CHARLS-2011/Completed/3-stage_data.dta")
 

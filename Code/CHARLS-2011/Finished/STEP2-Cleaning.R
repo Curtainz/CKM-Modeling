@@ -3,7 +3,7 @@ library(haven)
 library(dplyr)
 
 # 读取数据
-data <- read_dta("D:/GitHub/CKM-Modeling/ProcessedData/CHARLS-2011/2025.3.19/combined_data.dta")
+data <- read_dta("D:/GitHub/CKM-Modeling/ProcessedData/CHARLS-2011/Completed/1-combined_data.dta")
 
 # 重命名列
 data <- data %>% 
@@ -182,7 +182,7 @@ data_male <- data[last_digit == 1, ]
 data_female <- data[last_digit == 2, ]
 
 # 保存数据
-write_dta(data_male, "D:/GitHub/CKM-Modeling/ProcessedData/CHARLS-2011/2025.3.19/cleaned_data_male.dta")
-write_dta(data_female, "D:/GitHub/CKM-Modeling/ProcessedData/CHARLS-2011/2025.3.19/cleaned_data_female.dta")
-write_dta(data, "D:/GitHub/CKM-Modeling/ProcessedData/CHARLS-2011/2025.3.19/cleaned_data.dta")
-write.csv(data, "D:/GitHub/CKM-Modeling/ProcessedData/CHARLS-2011/2025.3.19/cleaned_data.csv")
+#write_dta(data_male, "D:/GitHub/CKM-Modeling/ProcessedData/CHARLS-2011/2025.3.19/cleaned_data_male.dta")
+#write_dta(data_female, "D:/GitHub/CKM-Modeling/ProcessedData/CHARLS-2011/2025.3.19/cleaned_data_female.dta")
+write_dta(data, "D:/GitHub/CKM-Modeling/ProcessedData/CHARLS-2011/Completed/2-cleaned_data.dta")
+#write.csv(data, "D:/GitHub/CKM-Modeling/ProcessedData/CHARLS-2011/2025.3.19/cleaned_data.csv")

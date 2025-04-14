@@ -5,6 +5,11 @@ library(dplyr)
 # 读取数据
 data <- read_dta("D:/GitHub/CKM-Modeling/ProcessedData/CHARLS-2011/Completed/4-combined_variable_data.dta")
 
+##### 整理年龄列 #####
+# 用2011减ba002_1的值，将所得到的值覆盖回ba002_1
+data <- data %>%
+  mutate(ba002_1 = ifelse(is.na(ba002_1), ba002_1, 2011 - ba002_1))
+  
 ##### 整理地区列 #####
 data <- data %>% # 把a001的所有值-1，不包括空值
   mutate(a001 = ifelse(is.na(a001), a001, a001 - 1))

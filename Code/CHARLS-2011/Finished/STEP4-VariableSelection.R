@@ -18,15 +18,15 @@ data <- read_dta("D:/GitHub/CKM-Modeling/Datasets/CHARLS-2011/RawData/household_
 
 # 从数据中提取如下变量
 # 个人ID，家庭ID，社区ID
-# ba004年龄
+# ba002_1出生年份
 # bd001最高学历
 # be001婚姻状态 
-demographic_background <- data %>% select(ID, householdID, communityID, ba004, bd001, be001)
+demographic_background <- data %>% select(ID, householdID, communityID, ba002_1, bd001, be001)
 
 ##### D 健康状况和功能 #####
 
 # 读取数据
-data <- read_dta("D:/GitHub/CKM-Modeling/Datasets/CHARLS-2011/RawData/Active/health_status_and_functioning.dta")
+data <- read_dta("D:/GitHub/CKM-Modeling/Datasets/CHARLS-2011/RawData/household_and_community_questionnaire_data/health_status_and_functioning.dta")
 
 # 从数据中提取如下变量
 # 个人ID，家庭ID，社区ID
@@ -94,20 +94,56 @@ blood <- data %>% select(ID, qc1_vb009, newbun, newglu, qc1_vb002, newcho, newtg
 ##### 数据整合 #####
 
 # 选择合并列
-merge_cols <- c("ID", "householdID", "communityID")
+#merge_cols <- c("ID", "householdID", "communityID")
 
 # 合并数据
-merged_data_ <- full_join(household_roster, demographic_background, by = merge_cols) %>%
-  full_join(health_status_and_functioning, by = merge_cols) %>%
-  full_join(health_care_and_insurance, by = merge_cols) %>%
-  full_join(work_retirement_and_pension, by = merge_cols)
+#merged_data_ <- full_join(household_roster, demographic_background, by = merge_cols) %>%
+#  full_join(health_status_and_functioning, by = merge_cols) %>%
+#  full_join(health_care_and_insurance, by = merge_cols) %>%
+#  full_join(work_retirement_and_pension, by = merge_cols)
 
 # 选择合并列
-merge_cols <- "ID"
+#merge_cols <- "ID"
 
 # 合并数据
-merged_data <- full_join(merged_data_, blood, by = merge_cols)
+#merged_data <- full_join(merged_data_, blood, by = merge_cols)
+
+merged_data_1 <- merge(household_roster, demographic_background, by="ID")
+merged_data_1 <- merged_data_1 %>%
+  rename(
+    householdID = householdID.x,
+    communityID = communityID.x,
+  )
+merged_data_1 <- merged_data_1 %>%
+  select(-c(householdID.y, communityID.y))
+
+merged_data_2 <- merge(merged_data_1,health_status_and_functioning, by="ID")
+merged_data_2 <- merged_data_2 %>%
+  rename(
+    householdID = householdID.x,
+    communityID = communityID.x,
+  )
+merged_data_2 <- merged_data_2 %>%
+  select(-c(householdID.y, communityID.y))
+
+merged_data_3 <- merge(merged_data_2,health_care_and_insurance, by="ID")
+merged_data_3 <- merged_data_3 %>%
+  rename(
+    householdID = householdID.x,
+    communityID = communityID.x,
+  )
+merged_data_3 <- merged_data_3 %>%
+  select(-c(householdID.y, communityID.y))
+
+merged_data_4 <- merge(merged_data_3,work_retirement_and_pension, by="ID")
+merged_data_4 <- merged_data_4 %>%
+  rename(
+    householdID = householdID.x,
+    communityID = communityID.x,
+  )
+merged_data_4 <- merged_data_4 %>%
+  select(-c(householdID.y, communityID.y))
 
 # 导出数据
-write_dta(merged_data, "D:/GitHub/CKM-Modeling/ProcessedData/CHARLS-2011/Completed/4-combined_variable_data.dta")
+write_dta(merged_data_4, "D:/GitHub/CKM-Modeling/ProcessedData/CHARLS-2011/Completed/4-combined_variable_data.dta")
 

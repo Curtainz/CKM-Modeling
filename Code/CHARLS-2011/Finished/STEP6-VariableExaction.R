@@ -10,7 +10,7 @@ data_var <- read_dta("D:/GitHub/CKM-Modeling/ProcessedData/CHARLS-2011/Completed
 data_var <- data_var %>%
   rename(
     region = a001,
-    age = ba004,
+    age = ba002_1,
     education = bd001,
     marital = be001,
     selfratedhealth = da001,
@@ -106,8 +106,16 @@ data_var <- data_var %>%
     )
 
 # 合并数据
-merge_cols <- c("ID", "householdID", "communityID")
-merged_data <- full_join(data_stage, data_var, by = merge_cols)
+#merge_cols <- c("ID", "householdID", "communityID")
+#merged_data <- full_join(data_stage, data_var, by = merge_cols)
+merged_data <- merge(data_stage, data_var, by="ID")
+merged_data <- merged_data %>%
+  rename(
+    householdID = householdID.x,
+    communityID = communityID.x,
+  )
+merged_data <- merged_data %>%
+  select(-c(householdID.y, communityID.y))
 
 # 保存数据
 write.csv(merged_data, "D:/GitHub/CKM-Modeling/ProcessedData/CHARLS-2011/Completed/6-merged_data.csv")

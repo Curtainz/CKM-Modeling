@@ -66,13 +66,22 @@ rm(blooddata)
 ##### 数据整合 #####
 
 # 选择合并列
-merge_cols <- c("ID", "householdID", "communityID")
-
+#merge_cols <- c("ID", "householdID", "communityID")
 # 合并体检数据和健康数据
-merged_data_1 <- full_join(extracted_biodata, extracted_healthdata, by = merge_cols)
-
+#merged_data_1 <- full_join(extracted_biodata, extracted_healthdata, by = merge_cols)
 # 合并血检数据
-merged_data_2 <- full_join(merged_data_1, extracted_blooddata, by = "ID")
+#merged_data_2 <- full_join(merged_data_1, extracted_blooddata, by = "ID")
+
+merged_data_1 <- merge(extracted_biodata,extracted_blooddata,by="ID")
+merged_data_2 <- merge(merged_data_1,extracted_healthdata,by="ID")
+merged_data_2 <- merged_data_2 %>%
+  rename(
+    householdID = householdID.x,
+    communityID = communityID.x,
+  )
+merged_data_2 <- merged_data_2 %>%
+  select(-c(householdID.y, communityID.y))
 
 # 导出数据
-write_dta(merged_data_2, "D:/GitHub/CKM-Modeling/ProcessedData/CHARLS-2011/2025.3.19/combined_data.dta")
+write_dta(merged_data_2, "D:/GitHub/CKM-Modeling/ProcessedData/CHARLS-2011/Completed/1-combined_data.dta")
+
