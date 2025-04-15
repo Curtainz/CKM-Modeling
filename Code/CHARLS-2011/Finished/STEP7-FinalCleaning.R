@@ -90,6 +90,14 @@ data <- data %>%
 # 清理环境变量
 rm(temp_data, temp_data_)
 
+##############################################################
+# 将 "0" 添加到 householdID 的末尾
+data$householdID <- paste0(data$householdID, "0")
+
+# 将 ID 更新为 householdID 加上 ID 的最后两个字符
+data$ID <- paste0(data$householdID, substr(data$ID, nchar(data$ID)-1, nchar(data$ID)))
+##############################################################
+
 # 导出数据
 write.csv(data, "D:/GitHub/CKM-Modeling/ProcessedData/CHARLS-2011/Completed/7-final_cleaned_data.csv")
 
