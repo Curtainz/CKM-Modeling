@@ -98,6 +98,23 @@ data$householdID <- paste0(data$householdID, "0")
 data$ID <- paste0(data$householdID, substr(data$ID, nchar(data$ID)-1, nchar(data$ID)))
 ##############################################################
 
+# 精简education数据，1=1，2 3 4 5=2，6 7 8 9 10 11 =3
+data <- data %>%
+  mutate(education = case_when(
+    education == 1 ~ 1,
+    education %in% c(2, 3, 4, 5) ~ 2,
+    education %in% c(6, 7, 8, 9, 10, 11) ~ 3,
+    TRUE ~ NA_real_ # 如果没有数值，赋值为 NA
+  ))
+
+# 精简marital数据，1 2=1，3 4 5 6=2
+data <- data %>%
+  mutate(marital = case_when(
+    marital %in% c(1, 2) ~ 1,
+    marital %in% c(3, 4, 5, 6) ~ 2,
+    TRUE ~ NA_real_ # 如果没有数值，赋值为 NA
+  ))
+
 # 导出数据
 write.csv(data, "D:/GitHub/CKM-Modeling/ProcessedData/CHARLS-2011/Completed/7-final_cleaned_data.csv")
 

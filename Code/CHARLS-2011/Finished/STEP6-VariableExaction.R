@@ -105,6 +105,14 @@ data_var <- data_var %>%
     depression_status
     )
 
+##############################################################
+# 将 "0" 添加到 householdID 的末尾
+data_var$householdID <- paste0(data_var$householdID, "0")
+
+# 将 ID 更新为 householdID 加上 ID 的最后两个字符
+data_var$ID <- paste0(data_var$householdID, substr(data_var$ID, nchar(data_var$ID)-1, nchar(data_var$ID)))
+##############################################################
+
 # 合并数据
 #merge_cols <- c("ID", "householdID", "communityID")
 #merged_data <- full_join(data_stage, data_var, by = merge_cols)
